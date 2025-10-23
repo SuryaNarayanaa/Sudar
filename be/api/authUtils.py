@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from typing import Optional
 import re
+from uuid import UUID
 from .database import get_db
 from .models import Teacher
 from dotenv import load_dotenv
@@ -214,7 +215,17 @@ def get_current_teacher(
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    teacher = db.query(Teacher).filter(Teacher.teacher_id == teacher_id).first()
+    try:
+        # Convert string UUID to UUID object
+        teacher_uuid = UUID(teacher_id)
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid teacher ID format",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    teacher = db.query(Teacher).filter(Teacher.teacher_id == teacher_uuid).first()
     if teacher is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
