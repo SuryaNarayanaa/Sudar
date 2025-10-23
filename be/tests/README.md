@@ -2,47 +2,86 @@
 
 Comprehensive test suite for the Sudar backend API.
 
+┌─────────────────────────────────────────────────────────────────┐
+│                    PYTEST EXECUTION STARTS                      │
+└─────────────────────────────────────────┬───────────────────────┘
+                                          │
+                                          ▼
+                ┌─────────────────────────────────────┐
+                │  conftest.py - Setup Phase          │
+                │  (Runs before EVERY test)           │
+                └─────────────────┬───────────────────┘
+                                  │
+                    ┌─────────────┴──────────────┐
+                    ▼                            ▼
+        ┌──────────────────────┐    ┌──────────────────────┐
+        │  test_db Fixture     │    │  client Fixture      │
+        │  (Fresh SQLite DB)   │    │  (TestClient)        │
+        │  - Create tables     │    │  - Override get_db   │
+        │  - Foreign keys ON   │    │  - Ready to use      │
+        └──────────────────────┘    └──────────────────────┘
+                    │                            │
+                    └─────────────┬──────────────┘
+                                  ▼
+                ┌─────────────────────────────────────┐
+                │  Optional: Create Sample Data       │
+                │  (Fixtures like sample_teacher,     │
+                │   sample_classroom, etc.)           │
+                └─────────────────┬───────────────────┘
+                                  │
+                                  ▼
+                ┌─────────────────────────────────────┐
+                │  RUN ACTUAL TEST                    │
+                └─────────────────┬───────────────────┘
+                                  │
+                                  ▼
+                ┌─────────────────────────────────────┐
+                │  CLEANUP & TEARDOWN                 │
+                │  - Drop all tables                  │
+                │  - Clear app overrides              │
+                │  - Close DB connection              │
+                └─────────────────────────────────────┘
 ## Test Coverage
 
 ### Authentication Tests (`test_auth_endpoints.py`)
-- ✅ Send verification code (new email, existing email, code updates)
-- ✅ Signup (success, invalid code, expired code, weak password)
-- ✅ Login (success, wrong password, non-existent email)
-- ✅ Forgot password (existing and non-existent emails)
-- ✅ Reset password (success, invalid code, expired code)
-- ✅ Get current user (authenticated and unauthenticated)
-- ✅ Logout (success and unauthenticated)
+- Send verification code (new email, existing email, code updates)
+- Signup (success, invalid code, expired code, weak password)
+- Login (success, wrong password, non-existent email)
+- Forgot password (existing and non-existent emails)
+- Reset password (success, invalid code, expired code)
+- Get current user (authenticated and unauthenticated)
+- Logout (success and unauthenticated)
 
 ### Authentication Utilities Tests (`test_auth_utils.py`)
-- ✅ Password hashing and verification
-- ✅ Password validation rules
-- ✅ Verification code generation
-- ✅ JWT token creation and decoding
+- Password hashing and verification
+- Password validation rules
+- Verification code generation
+- JWT token creation and decoding
 
 ### Classroom Tests (`test_classroom_endpoints.py`)
-- ✅ Create classroom (success, validation)
-- ✅ Get all classrooms
-- ✅ Get single classroom (success, not found, wrong teacher)
-- ✅ Update classroom
-- ✅ Delete classroom (with cascade)
+- Create classroom (success, validation)
+- Get all classrooms
+- Get single classroom (success, not found, wrong teacher)
+- Update classroom
+- Delete classroom (with cascade)
 
 ### Student Tests (`test_student_endpoints.py`)
-- ✅ Create student (success, duplicate rollno, invalid grade)
-- ✅ Get all students
-- ✅ Get single student
-- ✅ Update student (name, grade, DOB, multiple fields)
-- ✅ Delete student
+- Create student (success, duplicate rollno, invalid grade)
+- Get all students
+- Get single student
+- Update student (name, grade, DOB, multiple fields)
+- Delete student
 
 ### Subject Tests (`test_subject_endpoints.py`)
-- ✅ Create subject
-- ✅ Get all subjects
-- ✅ Get single subject
-- ✅ Update subject
-- ✅ Delete subject (with cascade to activities)
+- Create subject
+- Get all subjects
+- Get single subject
+- Update subject
+- Delete subject (with cascade to activities)
 
 ### Main Application Tests (`test_main.py`)
-- ✅ Root endpoint
-- ✅ Health check endpoint
+- Root endpoint
+- Health check endpoint
 
 ## Running Tests
 
@@ -132,10 +171,10 @@ Each test class focuses on a specific endpoint operation (Create, Read, Update, 
 ## Test Database
 
 Tests use an in-memory SQLite database that:
-- ✅ Is created fresh for each test
-- ✅ Has foreign key constraints enabled
-- ✅ Uses the same models as production
-- ✅ Cleans up automatically after tests
+- Is created fresh for each test
+- Has foreign key constraints enabled
+- Uses the same models as production
+- Cleans up automatically after tests
 
 ## CI/CD Integration
 
